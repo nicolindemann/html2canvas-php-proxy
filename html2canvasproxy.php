@@ -13,7 +13,7 @@ error_reporting(0);
 define('JSLOG', 'console.log'); //Configure alternative function log, eg. console.log, alert, custom_function
 define('PATH', 'images');//relative folder where the images are saved
 define('CCACHE', 60 * 5 * 1000);//Limit access-control and cache, define 0/false/null/-1 to not use "http header cache"
-define('TIMEOUT', 30);//Timeout from load Socket
+define('TIMEOUT', 20);//Timeout from load Socket
 define('MAX_LOOP', 10);//Configure loop limit for redirect (location header)
 define('CROSS_DOMAIN', 0);//Enable use of "data URI scheme"
 
