@@ -1,12 +1,11 @@
-html2canvas-php-proxy 0.1.11
-=====================
+## html2canvas-php-proxy
 
-#### PHP Proxy html2canvas ####
+## PHP Proxy html2canvas
 
 This script allows you to use **html2canvas.js** with different servers, ports and protocols (http, https),
 preventing to occur "tainted" when exporting the `<canvas>` for image.
 
-### Others scripting language ###
+## Others scripting language
 
 You do not use PHP, but need html2canvas working with proxy, see other proxies:
 
@@ -14,7 +13,8 @@ You do not use PHP, but need html2canvas working with proxy, see other proxies:
 * [html2canvas proxy in asp classic (vbscript)](https://github.com/brcontainer/html2canvas-asp-vbscript-proxy)
 * [html2canvas proxy in python (work any framework)](https://github.com/brcontainer/html2canvas-proxy-python)
 
-###Problem and Solution###
+## Problems and solutions
+
 When adding an image that belongs to another domain in `<canvas>` and after that try to export the canvas
 for a new image, a security error occurs (actually occurs is a security lock), which can return the error:
 
@@ -22,11 +22,23 @@ for a new image, a security error occurs (actually occurs is a security lock), w
 >
 > Error: An attempt was made to break through the security policy of the user agent.
 
-### Follow ###
+If using Google Maps (or google maps static) you can get this error in console:
+
+> Google Maps API error: MissingKeyMapError
+
+You need get a API Key in: https://developers.google.com/maps/documentation/javascript/get-api-key
+
+If get this error:
+
+> Access to Image at 'file:///...' from origin 'null' has been blocked by CORS policy: Invalid response. Origin 'null' is therefore not allowed access.
+
+Means that you are not using an HTTP server, html2canvas does not work over the "file:///" protocol, use Apache, Nginx or IIS with PHP for work.
+
+## Follow
 
 I ask you to follow me or "star" my repository to track updates
 
-### Run script in Cross-domain (data URI scheme) ###
+## Run script in Cross-domain (data URI scheme)
 
 (See details: https://github.com/brcontainer/html2canvas-php-proxy/issues/9)
 
@@ -34,21 +46,36 @@ I ask you to follow me or "star" my repository to track updates
 
 > Note: If the file html2canvasproxy.php is in the same domain that your project, you do not need to enable this option.
 
-> Note: Disable the "cross-domain" does not mean you will not be able to capture images from different servers, in other words, the "cross-domain" here refers to "html2canvas.js" (not necessarily the javascript file, but the place where runs) and the "html2canvas.php" are in different domains, the "cross-domain" here refers domain. 
+> Note: Disable the "cross-domain" does not mean you will not be able to capture images from different servers, in other words, the "cross-domain" here refers to "html2canvas.js" (not necessarily the javascript file, but the place where runs) and the "html2canvas.php" are in different domains, the "cross-domain" here refers domain.
 
 In some cases you may want to use this [html2canvasproxy.php](https://github.com/brcontainer/html2canvas-php-proxy/blob/master/html2canvasproxy.php) on a specific server, but the "html2canvas.js" and another server, this would cause problems in your project with the security causing failures in execution. In order to use security just set in the [html2canvasproxy.php](https://github.com/brcontainer/html2canvas-php-proxy/blob/master/html2canvasproxy.php):
 
-Enable cross-domain in proxy server:
+Enable data uri scheme for use proxy for all servers:
 
-`define('CROSS_DOMAIN', 1);`
+`define('H2CP_DATAURI', true);`
 
-Disable cross-domain in proxy server:
+Disable data uri scheme:
 
-`define('CROSS_DOMAIN', 0);`
+`define('H2CP_DATAURI', false);`
 
-### Usage ###
+## Setup
 
-> Note: Requires PHP 4.3.0+
+Definition | Description
+--- | ---
+`define('H2CP_PATH', 'cache');`                   | Folder where the images are saved
+`define('H2CP_PERMISSION', 0666);`                | Set forlder permission (use 644 or 666 for remove execution for prevent sploits)
+`define('H2CP_CACHE', 60 * 5 * 1000);`            | Limit access-control and cache in seconds, define 0/false/null/-1 to not use "http header cache"
+`define('H2CP_TIMEOUT', 20);`                     | Timeout from load Socket
+`define('H2CP_MAX_LOOP', 10);`                    | Configure loop limit for redirects (location header)
+`define('H2CP_DATAURI', false);`                  | Enable use of "data URI scheme"
+`define('H2CP_PREFER_CURL', true);`               | Prefer curl if avaliable or disable
+`define('H2CP_SSL_VERIFY_PEER', false);`          | Set false for disable SSL checking or true for enable (require config PHP.INI with `curl.cainfo=/path/to/cacert.pem`). You can set path manualy like this: `define('H2CP_SSL_VERIFY_PEER', '/path/to/cacert.pem');`
+`define('H2CP_ALLOWED_DOMAINS', '*');`   | `*` allow all domains, for subdomains use like this `*.site.com`, for fixed domains use `, 'site.com,www.site.com'` (`string` separed by commas)
+`define('H2CP_ALLOWED_PORTS', '80,443');` | Config allowed ports (`string` separed by commas)
+
+## Usage
+
+> Note: Requires PHP5+
 
 * [Google maps](https://github.com/brcontainer/html2canvas-php-proxy/blob/master/examples/google-maps.html)
 * [Test case](https://github.com/brcontainer/html2canvas-php-proxy/blob/master/examples/usable-example.html)
@@ -66,8 +93,8 @@ Disable cross-domain in proxy server:
             window.onload = function(){
                 html2canvas(document.body, {
                     "logging": true, //Enable log (use Web Console for get Errors and Warnings)
-                    "proxy":"html2canvasproxy.php",
-                    "onrendered": function(canvas) {
+                    "proxy": "html2canvasproxy.php",
+                    "onrendered": function (canvas) {
                         var img = new Image();
                         img.onload = function() {
                             img.onload = null;
@@ -97,7 +124,7 @@ Disable cross-domain in proxy server:
 </html>
 ```
 
-#### Using Web Console ####
+## Using Web Console
 
 If you have any problems with the script recommend to analyze the log use the Web Console from your browser:
 * Firefox: https://developer.mozilla.org/en-US/docs/Tools/Browser_Console
@@ -117,16 +144,16 @@ Replace `[DOMAIN]` by your domain (eg. 127.0.0.1) and replace `[PATH]` by your p
 
 `http://localhost/project-1/test/html2canvasproxy.php?url=http%3A%2F%2Fmaps.googleapis.com%2Fmaps%2Fapi%2Fstaticmap%3Fcenter%3D40.714728%2C-73.998672%26zoom%3D12%26size%3D800x600%26maptype%3Droadmap%26sensor%3Dfalse%261&callback=html2canvas_0`
 
-
-### Changelog ###
+## Changelog
 
 Changelog moved to https://github.com/brcontainer/html2canvas-php-proxy/blob/master/CHANGELOG.md
 
-
-### Next version ###
+## Next versions
 
 Details of future versions are being studied, in other words, can happen as can be forsaken ideas.
 The ideas here are not ready or are not public in the main script, are only suggestions. You can offer suggestions on [issues](https://github.com/brcontainer/html2canvas-php-proxy/issues/new).
 
 * Etag cache browser for use HTTP 304 (resources are reusable, avoiding unnecessary downloads)
 * Cache from SOCKET, if not specified header cache in SOCKET, then uses settings by `DEFINE();`
+* Rewrinte script using [PSR-4](http://www.php-fig.org/psr/psr-4/)
+* Support to `composer`
